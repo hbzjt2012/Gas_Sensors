@@ -39,6 +39,7 @@
 #include "usart2.h"
 #include "usart3_CO.h"
 #include "usart4_CO2_T6703.h"
+#include "usart5_CH2O_AS04.h"
 #include "led.h"
 #include "sht30.h"
 #include "w25q64.h"

@@ -51,7 +51,9 @@ extern	uint8_t USART3_RX_BUF[64];  //接收数据缓冲区,最大64个字节
 extern	uint8_t USART4_RX_STA;
 extern	uint8_t USART4_RX_BUF[64];  //接收数据缓冲区,最大64个字节
 
-
+//USART5变量定义
+extern	uint8_t USART5_RX_STA;
+extern	uint8_t USART5_RX_BUF[64];  //接收数据缓冲区,最大64个字节
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -182,6 +184,9 @@ void USART3_8_IRQHandler(void)
 	
 		uint8_t USART4_Res;
     static char USART4_start=0;
+	
+		uint8_t USART5_Res;
+    static char USART5_start=0;
 		
 	
 	  //USART3串口中断处理
@@ -248,6 +253,40 @@ void USART3_8_IRQHandler(void)
 							USART4_start  = 0;
 							USART4_RX_STA=0;//重新开始接收   
 							USART4_RX_BUF[0] = 0;
+					}
+				}                   
+    }
+		
+		//USART5串口中断处理
+		if (USART_GetITStatus(USART5, USART_IT_ORE) == SET)  
+    {  
+        USART_ClearITPendingBit(USART5,USART_IT_ORE);      
+        USART_ReceiveData( USART5 );  
+  
+    }
+
+    if(USART_GetITStatus(USART5, USART_IT_RXNE) != RESET)  //接收中断
+		{
+				USART_ClearITPendingBit(USART5,USART_IT_RXNE);  
+				USART5_Res =USART_ReceiveData(USART5); //读取接收到的数据
+				//USART_SendData(USART1,Res);
+				if(USART5_Res == 0x01) //如果接收到的第一位数据是0X42(这个是查看传感器手册得知的)
+				{
+						USART5_RX_STA = 0;     //让数组索引值从0开始
+						USART5_start = 1;  //这个变量用来确定第二位是否接收到了0X4D(这个也是查看传感器手册得知的)
+				}
+
+				if(USART5_start == 1)
+				{
+					USART5_RX_BUF[USART5_RX_STA] = USART5_Res ; //把接收到的数据存到数组里面
+					USART5_RX_STA++;
+					if(USART5_RX_STA >= 7 && (USART5_RX_BUF[1]==0x03))
+					{
+							//USART_SendData(USART1,USART_RX_BUF[12]*256+USART_RX_BUF[13]);
+							printf("CH2O:%d\n",USART5_RX_BUF[3]*256+USART5_RX_BUF[4]);
+							USART5_start  = 0;
+							USART5_RX_STA=0;//重新开始接收   
+							USART5_RX_BUF[0] = 0;
 					}
 				}                   
     }

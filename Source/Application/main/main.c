@@ -40,7 +40,7 @@
 /* Private variables ---------------------------------------------------------*/
 extern unsigned char ReadCO_Cmd[];
 extern unsigned char T6703_ReadGas_Cmd[];
-
+extern unsigned char ReadCH2O_Cmd[];
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -60,6 +60,7 @@ int main(void)
 		USART2_Init(); 			      //USART2串口初始化函数
 		USART3_CO_Init();       //USART3串口初始化,用于接收CO传感器数据
 	  USART4_CO2_T6703_Init();  //USART4串口初始化,用于接收CO2传感器数据 T6703传感器
+		USART5_CH2O_AS04_Init();  //USART5串口初始化,用于接收CH2O传感器数据 AS04传感器
 	  LED_Init();    //板载LED灯 LD2绿色
 //		SHT30_Init();  //SHT30温湿度传感器初始化
 		SPI_Flash_Init();  		//SPI FLASH 初始化		
@@ -76,9 +77,9 @@ int main(void)
 		{		
 //			Read_SHT30();
 //			Convert_SHT30();
-//				USART_SendData(USART4,'a');
-			  USART4_SendStr(USART4,T6703_ReadGas_Cmd,8);
 				USART3_SendStr(USART3,ReadCO_Cmd,8);
+			  USART4_SendStr(USART4,T6703_ReadGas_Cmd,8);
+				USART5_SendStr(USART5,ReadCH2O_Cmd,8);
 				delay_ms(1000);
 				printf("Hello world! \r\n");
 		}
