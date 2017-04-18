@@ -10,7 +10,7 @@
 void IAQ_I2C_delay(void)
 {
 		
-   uint8_t i=10; //这里可以优化速度
+   uint8_t i=30; //这里可以优化速度
    while(i) 
    { 
      i--; 
@@ -146,7 +146,7 @@ void IAQ_I2C_SendByte(uint8_t SendByte) //数据从高位到低位//
         IAQ_SDA_L;   
         SendByte<<=1;
         IAQ_I2C_delay();
-		IAQ_SCL_H;
+				IAQ_SCL_H;
         IAQ_I2C_delay();
     }
     IAQ_SCL_L;
