@@ -11,3 +11,5 @@
 *.ld
 *.txt
 *.lst
+
+*.TMP

@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER, STM32F091</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Source\Application\main;..\Source\STM32_FWLib\FWLib\inc;..\Source\STM32_FWLib\CMSIS;..\Source\Drivers\usart2;..\Source\Drivers\sht30;..\Source\Drivers\w25q64;..\Source\Drivers\led;..\Source\Drivers\delay;..\Source\Drivers\usart1_PM25;..\Source\Drivers\usart3_CO;..\Source\Drivers\usart4_CO2_T6703;..\Source\Drivers\usart5_CH2O_AS04</IncludePath>
+              <IncludePath>..\Source\Application\main;..\Source\STM32_FWLib\FWLib\inc;..\Source\STM32_FWLib\CMSIS;..\Source\Drivers\usart2;..\Source\Drivers\sht30;..\Source\Drivers\w25q64;..\Source\Drivers\led;..\Source\Drivers\delay;..\Source\Drivers\usart1_PM25;..\Source\Drivers\usart3_CO;..\Source\Drivers\usart4_CO2_T6703;..\Source\Drivers\usart5_CH2O_AS04;..\Source\Drivers\iaq</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -423,6 +423,11 @@
               <FileName>delay.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Source\Drivers\delay\delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>iaq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Source\Drivers\iaq\iaq.c</FilePath>
             </File>
           </Files>
         </Group>
