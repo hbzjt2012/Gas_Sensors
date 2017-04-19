@@ -1,46 +1,48 @@
 #include "main.h"
 
 //     硬件接线 
-//     Pin1-VCC  -> 5V
-//     Pin2-TXD  -> PC7
-//     Pin4-RXD  -> PC6
-//     Pin4-GND  -> GND
+//     VCC  -> 3.3V
+//     TXD  -> PC2
+//     RXD  -> PC3
+//     GND  -> GND
 
-uint8_t USART7_RX_STA;
-uint8_t USART7_RX_BUF[64];  //接收数据缓冲,最大64个字节
+uint8_t USART8_RX_STA;
+uint8_t USART8_RX_BUF[64];  //接收数据缓冲,最大64个字节
+
+unsigned char USART8_Send_Cmd[]={0x53,0x32,0x01,0x39,0x00,0x00,0x00};
 
 /**
-  * @brief  USART7初始化
+  * @brief  USART8初始化
 **/
-void USART7_CH2O_Dart_2_FE5_Init(void)
+void USART8_Comm_Init(void)
 {
 		//GPIO端口设置
 		GPIO_InitTypeDef GPIO_InitStructure;
     USART_InitTypeDef USART_InitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
 
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART7,ENABLE);   //使能USART7时钟
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART8,ENABLE);   //使能USART8时钟
 
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);     //使能GPIOC时钟
 
-    //USART7_TX   GPIOC.6
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6; //PC.6
+    //USART8_TX   GPIOC.2
+		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; //PC.2
 		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF; 
 		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;  //复用推挽输出
 		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-		GPIO_Init(GPIOC, &GPIO_InitStructure);//初始化GPIOC.6
+		GPIO_Init(GPIOC, &GPIO_InitStructure);//初始化GPIOC.2
 
-		//USART7_RX   GPIOC.7
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;//PC.7
+		//USART8_RX   GPIOC.3
+		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;//PC.3
 		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;//浮空输入
 		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;  //复用推挽输出
 		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-		GPIO_Init(GPIOC, &GPIO_InitStructure);//初始化GPIOC.7 
+		GPIO_Init(GPIOC, &GPIO_InitStructure);//初始化GPIOC.3 
 	
-		GPIO_PinAFConfig(GPIOC,GPIO_PinSource6,GPIO_AF_1);  //复用串口功能1
-		GPIO_PinAFConfig(GPIOC,GPIO_PinSource7,GPIO_AF_1);
+		GPIO_PinAFConfig(GPIOC,GPIO_PinSource2,GPIO_AF_2);  //复用串口功能2
+		GPIO_PinAFConfig(GPIOC,GPIO_PinSource3,GPIO_AF_2);
 		
 		//USART初始化设置
 
@@ -50,27 +52,27 @@ void USART7_CH2O_Dart_2_FE5_Init(void)
     USART_InitStructure.USART_Parity = USART_Parity_No;//无奇偶校验
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//无硬件数据流控制
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx; //收发模式
-		USART_Init(USART7, &USART_InitStructure); //初始化串口7
+		USART_Init(USART8, &USART_InitStructure); //初始化串口8
 		
-		//USART7 NVIC 设置
+		//USART8 NVIC 设置
 		NVIC_InitStructure.NVIC_IRQChannel = USART3_8_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPriority=1 ;//抢占优先级1
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;         //IRQ通道使能
     NVIC_Init(&NVIC_InitStructure); //根据指定参数初始化NVIC
                     
-		USART_ITConfig(USART7, USART_IT_RXNE, ENABLE);//开启串口7接收中断
-		USART_ITConfig(USART7, USART_IT_ORE, ENABLE);
-		USART_Cmd(USART7, ENABLE);                    //使能串口7 
+		USART_ITConfig(USART8, USART_IT_RXNE, ENABLE);//开启串口8接收中断
+		USART_ITConfig(USART8, USART_IT_ORE, ENABLE);
+		USART_Cmd(USART8, ENABLE);                    //使能串口8 
 
 }
 
 /**
-  * @brief  USART7发送一个字符串
+  * @brief  USART8发送一个字符串
 **/
-void USART7_SendStr(USART_TypeDef* USARTx, uint8_t *Data,uint32_t len)
+void USART8_SendStr(USART_TypeDef* USARTx, uint8_t *Data,uint32_t len)
 {
     uint32_t i;
-		USART_ClearFlag(USART7,USART_FLAG_TC); 
+		USART_ClearFlag(USART8,USART_FLAG_TC); 
     for(i=0; i<len; i++)
     {                                         
         USART_SendData(USARTx, *Data++);

@@ -64,6 +64,7 @@ int main(void)
 		USART5_CH2O_AS04_Init();    //USART5串口初始化,用于接收CH2O传感器数据 AS04传感器
 		USART6_CO2_S8_0053_Init();  //USART6串口初始化,用于接收CO2传感器数据 S8-0053传感器
 		USART7_CH2O_Dart_2_FE5_Init(); //USART7串口初始化,用于接收CH2O传感器数据 Dart_2_FE5传感器
+		USART8_Comm_Init();         //USART8串口初始化,用于发送所有传感器数据与命令传输
 	  LED_Init();    //板载LED灯 LD2绿色
 //		SHT30_Init();  //SHT30温湿度传感器初始化
 //	  IAQ_Init();   //IAQ传感器初始化

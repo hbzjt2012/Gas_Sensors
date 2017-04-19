@@ -42,6 +42,7 @@
 #include "usart5_CH2O_AS04.h"
 #include "usart6_CO2_S8_0053.h"
 #include "usart7_CH2O_Dart_2_FE5.h"
+#include "usart8_Comm.h"
 #include "led.h"
 #include "sht30.h"
 #include "iaq.h"
