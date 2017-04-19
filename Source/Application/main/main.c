@@ -63,6 +63,7 @@ int main(void)
 	  USART4_CO2_T6703_Init();    //USART4串口初始化,用于接收CO2传感器数据 T6703传感器
 		USART5_CH2O_AS04_Init();    //USART5串口初始化,用于接收CH2O传感器数据 AS04传感器
 		USART6_CO2_S8_0053_Init();  //USART6串口初始化,用于接收CO2传感器数据 S8-0053传感器
+		USART7_CH2O_Dart_2_FE5_Init(); //USART7串口初始化,用于接收CH2O传感器数据 Dart_2_FE5传感器
 	  LED_Init();    //板载LED灯 LD2绿色
 //		SHT30_Init();  //SHT30温湿度传感器初始化
 //	  IAQ_Init();   //IAQ传感器初始化
@@ -80,7 +81,7 @@ int main(void)
 		{		
 //			Read_SHT30();
 //			Convert_SHT30();
-//			Get_CO2_TVOC();
+ // 			Get_CO2_TVOC();
 				USART3_SendStr(USART3,ReadCO_Cmd,8);
 			  USART4_SendStr(USART4,T6703_ReadGas_Cmd,8);
 				USART5_SendStr(USART5,ReadCH2O_Cmd,8);

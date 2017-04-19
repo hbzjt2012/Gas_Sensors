@@ -59,6 +59,10 @@ extern	uint8_t USART5_RX_BUF[64];  //接收数据缓冲区,最大64个字节
 extern	uint8_t USART6_RX_STA;
 extern	uint8_t USART6_RX_BUF[64];  //接收数据缓冲区,最大64个字节
 
+//USART7变量定义
+extern	uint8_t USART7_RX_STA;
+extern	uint8_t USART7_RX_BUF[64];  //接收数据缓冲区,最大64个字节
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -194,6 +198,9 @@ void USART3_8_IRQHandler(void)
 	
 		uint8_t USART6_Res;
     static char USART6_start=0;
+	
+		uint8_t USART7_Res;
+    static char USART7_start=0;
 		
 	
 	  //USART3串口中断处理
@@ -328,6 +335,40 @@ void USART3_8_IRQHandler(void)
 							USART6_start  = 0;
 							USART6_RX_STA=0;//重新开始接收   
 							USART6_RX_BUF[0] = 0;
+					}
+				}                   
+    }
+		
+		//USART7串口中断处理
+		if (USART_GetITStatus(USART7, USART_IT_ORE) == SET)  
+    {  
+        USART_ClearITPendingBit(USART7,USART_IT_ORE);      
+        USART_ReceiveData( USART7 );  
+  
+    }
+
+    if(USART_GetITStatus(USART7, USART_IT_RXNE) != RESET)  //接收中断
+		{
+				USART_ClearITPendingBit(USART7,USART_IT_RXNE);  
+				USART7_Res =USART_ReceiveData(USART7); //读取接收到的数据
+				//USART_SendData(USART1,Res);
+				if(USART7_Res == 0xFF) //如果接收到的第一位数据是0XFF(这个是查看传感器手册得知的)
+				{
+						USART7_RX_STA = 0;     //让数组索引值从0开始
+						USART7_start = 1;  //这个变量用来确定第二位是否接收到了0X17(这个也是查看传感器手册得知的)
+				}
+
+				if(USART7_start == 1)
+				{
+					USART7_RX_BUF[USART7_RX_STA] = USART7_Res ; //把接收到的数据存到数组里面
+					USART7_RX_STA++;
+					if(USART7_RX_STA >= 9 && (USART7_RX_BUF[1]==0x17))
+					{
+							//USART_SendData(USART1,USART_RX_BUF[12]*256+USART_RX_BUF[13]);
+							printf("CH2O From Dart 2-FE5:%d\n",USART7_RX_BUF[4]*256+USART7_RX_BUF[5]);
+							USART7_start  = 0;
+							USART7_RX_STA=0;//重新开始接收   
+							USART7_RX_BUF[0] = 0;
 					}
 				}                   
     }
