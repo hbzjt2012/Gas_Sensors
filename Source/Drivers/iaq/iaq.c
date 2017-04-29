@@ -1,277 +1,148 @@
 #include "main.h"
-
-/*******************************************************************************
-* Function Name  : IAQ_I2C_delay
-* Description    : Simulation IIC Timing series delay
-* Input          : None
-* Output         : None
-* Return         : None
-****************************************************************************** */
-void IAQ_I2C_delay(void)
-{
-		
-   uint8_t i=30; //这里可以优化速度
-   while(i) 
-   { 
-     i--; 
-   }  
-}
-
-/*******************************************************************************
-* Function Name  : IAQ_I2C_Start
-* Description    : Master Start Simulation IIC Communication
-* Input          : None
-* Output         : None
-* Return         : Wheather	 Start
-****************************************************************************** */
-uint8_t IAQ_I2C_Start(void)
-{
-	IAQ_SDA_OUT();
-	IAQ_SDA_H;
-	IAQ_SCL_H;
-	IAQ_I2C_delay();
-	if(!IAQ_SDA_read)return FALSE;	//IAQ_SDA线为低电平则总线忙,退出
-	IAQ_SDA_L;
-	IAQ_I2C_delay();
-	if(IAQ_SDA_read) return FALSE;	//IAQ_SDA线为高电平则总线出错,退出
-	IAQ_SDA_L;
-	IAQ_I2C_delay();
-	return TRUE;
-}
-
-/*******************************************************************************
-* Function Name  : IAQ_I2C_Stop
-* Description    : Master Stop Simulation IIC Communication
-* Input          : None
-* Output         : None
-* Return         : None
-****************************************************************************** */
-void IAQ_I2C_Stop(void)
-{
-	IAQ_SDA_OUT();
-	IAQ_SCL_L;
-	IAQ_I2C_delay();
-	IAQ_SDA_L;
-	IAQ_I2C_delay();
-	IAQ_SCL_H;
-	IAQ_I2C_delay();
-	IAQ_SDA_H;
-	IAQ_I2C_delay();
-} 
-
-/*******************************************************************************
-* Function Name  : IAQ_I2C_Ack
-* Description    : Master Send Acknowledge Single
-* Input          : None
-* Output         : None
-* Return         : None
-****************************************************************************** */
-void IAQ_I2C_Ack(void)
-{	
-	IAQ_SCL_L;
-	IAQ_I2C_delay();
-	IAQ_SDA_OUT();
-	IAQ_SDA_L;
-	IAQ_I2C_delay();
-	IAQ_SCL_H;
-	IAQ_I2C_delay();
-	IAQ_SCL_L;
-	IAQ_I2C_delay();
-}
-
-/*******************************************************************************
-* Function Name  : IAQ_I2C_NoAck
-* Description    : Master Send No Acknowledge Single
-* Input          : None
-* Output         : None
-* Return         : None
-****************************************************************************** */
-void IAQ_I2C_NoAck(void)
-{	
-	IAQ_SCL_L;
-	IAQ_I2C_delay();
-	IAQ_SDA_OUT();
-	IAQ_SDA_H;
-	IAQ_I2C_delay();
-	IAQ_SCL_H;
-	IAQ_I2C_delay();
-	IAQ_SCL_L;
-	IAQ_I2C_delay();
-} 
-/*******************************************************************************
-* Function Name  : IAQ_I2C_WaitAck
-* Description    : Master Reserive Slave Acknowledge Single
-* Input          : None
-* Output         : None
-* Return         : Wheather	 Reserive Slave Acknowledge Single
-****************************************************************************** */
-uint8_t IAQ_I2C_WaitAck(void) 	//返回为:=1有ACK,=0无ACK
-{
-	IAQ_SCL_L;
-	IAQ_I2C_delay();
-	IAQ_SDA_IN();
-	IAQ_SDA_H;			
-	IAQ_I2C_delay();
-	IAQ_SCL_H;
-	IAQ_I2C_delay();
-	if(IAQ_SDA_read)
-	{
-      IAQ_SCL_L;
-	  IAQ_I2C_delay();
-      return FALSE;
-	}
-	IAQ_SCL_L;
-	IAQ_I2C_delay();
-	return TRUE;
-}
-
-/*******************************************************************************
-* Function Name  : IAQ_I2C_SendByte
-* Description    : Master Send a Byte to Slave
-* Input          : Will Send Date
-* Output         : None
-* Return         : None
-****************************************************************************** */
-void IAQ_I2C_SendByte(uint8_t SendByte) //数据从高位到低位//
-{
-    uint8_t i=8;
-		IAQ_SDA_OUT();
-    while(i--)
-    {
-        IAQ_SCL_L;
-        IAQ_I2C_delay();
-      if(SendByte&0x80)
-        IAQ_SDA_H;  
-      else 
-        IAQ_SDA_L;   
-        SendByte<<=1;
-        IAQ_I2C_delay();
-				IAQ_SCL_H;
-        IAQ_I2C_delay();
-    }
-    IAQ_SCL_L;
-}
-
-/*******************************************************************************
-* Function Name  : IAQ_I2C_RadeByte
-* Description    : Master Reserive a Byte From Slave
-* Input          : None
-* Output         : None
-* Return         : Date From Slave 
-****************************************************************************** */
-unsigned char IAQ_I2C_ReadByte(void)  //数据从高位到低位//
-{ 
-    uint8_t i=8;
-    uint8_t ReceiveByte=0;
-		
-		IAQ_SDA_IN();
-    IAQ_SDA_H;				
-    while(i--)
-    {
-      ReceiveByte<<=1;      
-      IAQ_SCL_L;
-      IAQ_I2C_delay();
-			IAQ_SCL_H;
-      IAQ_I2C_delay();	
-      if(IAQ_SDA_read)
-      {
-        ReceiveByte|=0x01;
-      }
-    }
-    IAQ_SCL_L;
-    return ReceiveByte;
-} 
-
-//单字节写入*******************************************
-uint8_t IAQ_Single_Write(unsigned char SlaveAddress,unsigned char REG_Address,unsigned char REG_data)		     //void
-{
-  	if(!IAQ_I2C_Start())return FALSE;
-    IAQ_I2C_SendByte(SlaveAddress);   //发送设备地址+写信号//IAQ_I2C_SendByte(((REG_Address & 0x0700) >>7) | SlaveAddress & 0xFFFE);//设置高起始地址+器件地址 
-    if(!IAQ_I2C_WaitAck()){IAQ_I2C_Stop(); return FALSE;}
-    IAQ_I2C_SendByte(REG_Address );   //设置低起始地址  
-    IAQ_I2C_WaitAck();	
-    IAQ_I2C_SendByte(REG_data);
-    IAQ_I2C_WaitAck();   
-    IAQ_I2C_Stop(); 
-    delay_ms(5);
-    return TRUE;
-}
-
-//单字节读取*****************************************
-unsigned char IAQ_Single_Read(unsigned char SlaveAddress,unsigned char REG_Address)
-{   unsigned char REG_data;     	
-		if(!IAQ_I2C_Start())return FALSE;
-    IAQ_I2C_SendByte(SlaveAddress); //IAQ_I2C_SendByte(((REG_Address & 0x0700) >>7) | REG_Address & 0xFFFE);//设置高起始地址+器件地址 
-    if(!IAQ_I2C_WaitAck()){IAQ_I2C_Stop(); return FALSE;}
-    IAQ_I2C_SendByte((uint8_t) REG_Address);   //设置低起始地址  
-    IAQ_I2C_WaitAck();
-    IAQ_I2C_Start();
-    IAQ_I2C_SendByte(SlaveAddress+1);
-    IAQ_I2C_WaitAck();
-
-		REG_data= IAQ_I2C_ReadByte();
-    IAQ_I2C_NoAck();
-    IAQ_I2C_Stop();
-    //return TRUE;
-	return REG_data;
-}
-
+  
+/*******************************************************************************/
 void IAQ_Init(void)
-{
-	  
-	  GPIO_InitTypeDef  GPIO_InitStructure; 
+{ 
+	 GPIO_InitTypeDef GPIO_InitStructure;
 	
-		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
- 
-		GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_8;
-		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT; 
-		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-		GPIO_Init(GPIOB, &GPIO_InitStructure);
+	 RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);     //使能GPIOB时钟
 
-		GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_9;
-		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-		GPIO_Init(GPIOB, &GPIO_InitStructure);
+	 //配置I2C1_SCL(PB8)和I2C1_SDA(PB9)开漏输出
+	 GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
+	 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	 GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	 GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+	 GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
-
-/*******************************************************************************
-* Function Name  : ReadIAQ
-* Description    : Read IAQ Data
-* Input          : None
-* Output         : None
-* Return         : None
-****************************************************************************** */
-void ReadIAQ(uint8_t *s,uint8_t length)
-{	
-	uint8_t i;
-  IAQ_I2C_Start();
-	IAQ_I2C_SendByte(Sensor_ADDRESS);
-	for(i=0;i<(length-1);i++)
-	{
-		*s=IAQ_I2C_ReadByte();
-		IAQ_I2C_Ack();
-		s++;
-	}
-	*s=IAQ_I2C_ReadByte();
-	IAQ_I2C_NoAck();
-	IAQ_I2C_Stop();
-} 
-
-/*******************************************************************************
-* Function Name  : Get_CO2_IAQ
-* Description    : Get CO2 and IAQ Value from IAQ
-* Input          : None
-* Output         : None
-* Return         : None
-****************************************************************************** */
-void Get_CO2_TVOC(void)
+  
+/*******************************************************************************/
+static uint8_t I2C_Start(void)
 {
-	uint8_t buf[7];
-	ReadIAQ(buf,14);
-	printf((const char *)buf);
+		SDAH;
+		SCLH;
+		delay_us(5);
+		if(!SDA_STATE) {
+						printf("I2C is busy!\r\n");
+						return I2C_BUSY;         
+		}
+		SDAL;
+		delay_us(5);
+		SCLL;
+		delay_us(10);
+		if(SDA_STATE) {
+						printf("I2C is error!\r\n");
+						return I2C_ERROR;
+		}
+		return I2C_READY;
+}
+/*******************************************************************************/
+static void I2C_Stop(void)
+{
+		SDAL;
+		delay_us(5);
+		SCLH;
+		delay_us(5);
+		SDAH;
+		delay_us(5);
+}
+/*******************************************************************************/
+static void I2C_Ack(uint8_t i)
+{
+		if(i)
+						SDAL;                                //ACK
+		else                                        
+						SDAH;                                //NACK
+		delay_us(2);
+		SCLH;
+		delay_us(2);
+		SCLL;
+		delay_us(2); 
+}
+/*******************************************************************************/
+static uint8_t I2C_Wait_Ack(void)
+{
+		uint8_t ucErrTime = 0;
+		SDAH;
+		delay_us(2);
+		SCLH;
+		delay_us(2);
+		while(SDA_STATE)
+		{
+						ucErrTime++;
+						if(ucErrTime > 250)
+						{
+										I2C_Stop();
+										printf("I2C NACK!\r\n");
+										return I2C_NACK;
+						}
+		}
+		SCLL;
+		delay_us(2);
+		return I2C_ACK;
+}
+/*******************************************************************************/
+static void I2C_SendByte(uint8_t d)
+{
+		uint8_t i;
+
+		SCLL;
+		delay_us(2);
+		for(i=0x80;i!=0;i/=2)
+		{
+							if(i&d)
+											 SDAH;
+							else
+											 SDAL;
+						delay_us(2);
+							SCLH;
+							delay_us(2);
+							SCLL;
+							delay_us(2);
+		}
+}
+/*******************************************************************************/
+static uint8_t I2C_ReceiveByte(void)
+{
+		uint8_t i, d=0;
+		SDAH;
+		SCLL;
+		delay_us(2);
+		for(i=0x80;i!=0;i/=2)
+		{
+							SCLH;
+						delay_us(2);
+						if(SDA_STATE)
+											 d |= i;
+						 SCLL;
+							delay_us(2);
+		}
+		return d;
+}
+/*******************************************************************************/
+uint8_t IAQ_Read(uint8_t *pBuffer, uint8_t NumByteToRead)
+{
+        
+		if(I2C_Start()) {
+						printf("Start error!\r\n");
+						return 1;
+		}
+		delay_us(20);
+		I2C_SendByte(0xB5);
+		delay_us(20);
+		if(!I2C_Wait_Ack()) {
+						printf("No Ack after send address!\r\n");
+						return 2;
+		}
+
+		while(NumByteToRead--) {
+										delay_us(20);
+										*pBuffer++ = I2C_ReceiveByte();
+										delay_us(20);
+										if(NumByteToRead)
+														I2C_Ack(1);
+										else
+														I2C_Ack(0);        
+		}
+		return 0;
 }
 

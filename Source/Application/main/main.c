@@ -42,6 +42,17 @@ extern unsigned char ReadCO_Cmd[];
 extern unsigned char T6703_ReadGas_Cmd[];
 extern unsigned char ReadCH2O_Cmd[];
 extern unsigned char ReadCO2_S8_Cmd[];
+extern unsigned char USART8_Send_Gas_Data[];
+
+etError   error;       // error code
+uint32_t      serialNumber;// serial number
+regStatus status;      // sensor status
+float        temperature; // temperature [癈]
+float        humidity;    // relative humidity [%RH]
+ // bt        heater;      // heater, false: off, true: on
+
+uint8_t buf[15];
+uint8_t dd=0;
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -66,7 +77,15 @@ int main(void)
 		USART7_CH2O_Dart_2_FE5_Init(); //USART7串口初始化,用于接收CH2O传感器数据 Dart_2_FE5传感器
 		USART8_Comm_Init();         //USART8串口初始化,用于发送所有传感器数据与命令传输
 	  LED_Init();    //板载LED灯 LD2绿色
-//		SHT30_Init();  //SHT30温湿度传感器初始化
+		SHT3X_Init(0x44); // Address: 0x44 = Sensor on EvalBoard connector
+                    //          0x45 = Sensor on EvalBoard  //SHT30温湿度传感器初始化
+		delay_ms(50000);
+	  error = SHT3x_ReadSerialNumber(&serialNumber);
+		if(error != NO_ERROR){} // do error handling here
+		//start periodic measurement, with high repeatability and 1 measurements per second
+		error = SHT3X_StartPeriodicMeasurment(REPEATAB_HIGH, FREQUENCY_1HZ);
+		if(error != NO_ERROR)  {}// do error handling here	
+		
 //	  IAQ_Init();   //IAQ传感器初始化
 		SPI_Flash_Init();  		//SPI FLASH 初始化		
 		while(SPI_Flash_ReadID()!=W25Q64)							//检测不到W25Q64
@@ -80,13 +99,21 @@ int main(void)
 		printf(" SPI_Flash ID:%x\r\nr\n",SPI_FLASH_TYPE);
 		while(1)
 		{		
-//			Read_SHT30();
-//			Convert_SHT30();
- // 			Get_CO2_TVOC();
+//				dd=IAQ_Read(buf,8);
+			  // read measurment buffer
+				error = SHT3X_ReadMeasurementBuffer(&temperature, &humidity); 
+				if(error != NO_ERROR) // do error handling here	
+				{
+					printf("SHT3x-Dis Read Error!\r\n");
+				}					
+				printf("serialNumber=%d  error=%d\n",serialNumber,error);
+				printf("temperature=%f humidity=%f \n",temperature,humidity);
+				USART8_SendStr(USART8,buf,8);
 				USART3_SendStr(USART3,ReadCO_Cmd,8);
 			  USART4_SendStr(USART4,T6703_ReadGas_Cmd,8);
 				USART5_SendStr(USART5,ReadCH2O_Cmd,8);
 				USART6_SendStr(USART6,ReadCO2_S8_Cmd,8);
+				USART8_SendStr(USART8,USART8_Send_Gas_Data,17);
 				delay_ms(1000);
 				printf("Hello world! \r\n");
 		}

@@ -66,7 +66,10 @@ extern	uint8_t USART7_RX_BUF[64];  //接收数据缓冲区,最大64个字节
 //USART8变量定义
 extern	uint8_t USART8_RX_STA;
 extern	uint8_t USART8_RX_BUF[64];  //接收数据缓冲区,最大64个字节
-extern unsigned char USART8_Send_Cmd[];
+extern unsigned char USART8_Send_Cmd_01[];
+extern unsigned char USART8_Send_Cmd_0C[];
+extern unsigned char USART8_Send_Cmd_0C_Data;
+extern uint16_t USART8_Send_Cmd_04_Data[];
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -404,14 +407,48 @@ void USART3_8_IRQHandler(void)
 				{
 					USART8_RX_BUF[USART8_RX_STA] = USART8_Res ; //把接收到的数据存到数组里面
 					USART8_RX_STA++;
-					if(USART8_RX_STA >= 2 && (USART8_RX_BUF[1]==0x32))
+					if(USART8_RX_STA >= 3 && (USART8_RX_BUF[1]==0x32) && (USART8_RX_BUF[2]==0x01))
 					{
 							//USART_SendData(USART1,USART_RX_BUF[12]*256+USART_RX_BUF[13]);
 							//printf("CH2O From Dart 2-FE5:%d\n",USART8_RX_BUF[4]*256+USART8_RX_BUF[5]);
-						  USART8_SendStr(USART8,USART8_Send_Cmd,7);
+						  USART8_SendStr(USART8,USART8_Send_Cmd_01,7);
 							USART8_start  = 0;
 							USART8_RX_STA=0;//重新开始接收   
 							USART8_RX_BUF[0] = 0;
+							USART8_RX_BUF[2] = 0;
+					}
+					else if(USART8_RX_STA >= 4 && (USART8_RX_BUF[1]==0x32) && (USART8_RX_BUF[2]==0x0C))
+					{
+							USART8_Send_Cmd_0C_Data = USART8_RX_BUF[3];
+							USART8_Send_Cmd_0C[3]=USART8_RX_BUF[3];
+							USART8_SendStr(USART8,USART8_Send_Cmd_0C,7);
+							USART8_start  = 0;
+							USART8_RX_STA=0;//重新开始接收   
+							USART8_RX_BUF[0] = 0;
+							USART8_RX_BUF[2] = 0;
+					}
+					else if(USART8_RX_STA >= 18 && (USART8_RX_BUF[1]==0x32) && (USART8_RX_BUF[2]==0x04))
+					{
+							char str[40];
+							USART8_Send_Cmd_04_Data[0] = USART8_RX_BUF[4]*256 + USART8_RX_BUF[5];
+							USART8_Send_Cmd_04_Data[1] = USART8_RX_BUF[7]*256 + USART8_RX_BUF[8];
+							USART8_Send_Cmd_04_Data[2] = USART8_RX_BUF[10]*256 + USART8_RX_BUF[11];
+							USART8_Send_Cmd_04_Data[3] = USART8_RX_BUF[13]*256 + USART8_RX_BUF[14];
+							USART8_Send_Cmd_04_Data[4] = USART8_RX_BUF[16]*256 + USART8_RX_BUF[17];
+							sprintf(str,"Cmd_04_Data[0]: %d\r\n",USART8_Send_Cmd_04_Data[0]);
+							USART8_SendStr(USART8,(uint8_t *)str,strlen(str));
+							sprintf(str,"Cmd_04_Data[1]: %d\r\n",USART8_Send_Cmd_04_Data[1]);
+							USART8_SendStr(USART8,(uint8_t *)str,strlen(str));
+							sprintf(str,"Cmd_04_Data[2]: %d\r\n",USART8_Send_Cmd_04_Data[2]);
+							USART8_SendStr(USART8,(uint8_t *)str,strlen(str));
+							sprintf(str,"Cmd_04_Data[3]: %d\r\n",USART8_Send_Cmd_04_Data[3]);
+							USART8_SendStr(USART8,(uint8_t *)str,strlen(str));
+							sprintf(str,"Cmd_04_Data[4]: %d\r\n",USART8_Send_Cmd_04_Data[4]);
+							USART8_SendStr(USART8,(uint8_t *)str,strlen(str));
+							USART8_start  = 0;
+							USART8_RX_STA=0;//重新开始接收   
+							USART8_RX_BUF[0] = 0;
+							USART8_RX_BUF[2] = 0;
 					}
 				}                   
     }
