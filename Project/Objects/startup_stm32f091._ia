@@ -1,0 +1,6 @@
+--cpu Cortex-M0 -g --apcs=interwork --pd "__MICROLIB SETA 1"
+-IC:\Users\Administrator\Desktop\Gas_Sensors\Project\RTE\_STM32_Sensors
+-ID:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.4.0\Device\Include
+-ID:\Keil_v5\ARM\CMSIS\Include
+--pd "__UVISION_VERSION SETA 522" --pd "STM32F091 SETA 1"
+--list .\listings\startup_stm32f091.lst --xref -o .\objects\startup_stm32f091.o --depend .\objects\startup_stm32f091.d "..\Source\STM32_FWLib\CMSIS\startup\startup_stm32f091.s"
