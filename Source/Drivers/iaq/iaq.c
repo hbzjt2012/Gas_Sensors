@@ -12,11 +12,7 @@ void IAQ_Init(void)
 	 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	 GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	 GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
-	 GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	 GPIO_Init(GPIOB, &GPIO_InitStructure);
-	
-	 SDAH;
-	 SCLH;
 }
   
 /*******************************************************************************/

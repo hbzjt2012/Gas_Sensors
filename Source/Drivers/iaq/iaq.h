@@ -6,12 +6,12 @@
 
 #define Sensor_ADDRESS 0xb5 //¶ÁÈ¡sensorµØÖ·
 
-#define SCLL       (GPIOB->BRR = GPIO_Pin_8)       // set SCL to low
-#define SCLH       (GPIOB->BSRR = GPIO_Pin_8)      // set SCL to open-drain                                       
-#define SDAL       (GPIOB->BRR = GPIO_Pin_9)       // set SDA to low
-#define SDAH       (GPIOB->BSRR = GPIO_Pin_9)      // set SDA to open-drain
+#define SCLL       GPIO_ResetBits(GPIOB,GPIO_Pin_8)
+#define SCLH       GPIO_SetBits(GPIOB,GPIO_Pin_8)                                             
+#define SDAL       GPIO_ResetBits(GPIOB,GPIO_Pin_9)
+#define SDAH       GPIO_SetBits(GPIOB,GPIO_Pin_9)
 
-#define SDA_STATE     (GPIOB->IDR&GPIO_Pin_9)      // read SDA
+#define SDA_STATE     GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_9)
 
 enum I2C_REPLY {I2C_NACK = 0, I2C_ACK = 1};
 

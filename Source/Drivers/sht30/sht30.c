@@ -1,11 +1,5 @@
 #include "main.h"
 
-//     Ó²¼þ½ÓÏß 
-//     VCC  -> +5V
-//     GND  -> GND
-//     SDA  -> PA1
-//     SCL  -> PA0
-
 //-- Static function prototypes -----------------------------------------------
 static etError I2c_WaitWhileClockStreching(uint8_t timeout);
 
