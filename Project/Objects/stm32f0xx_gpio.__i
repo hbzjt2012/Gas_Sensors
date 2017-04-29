@@ -1,0 +1,6 @@
+-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Source\Application\main -I ..\Source\STM32_FWLib\FWLib\inc -I ..\Source\STM32_FWLib\CMSIS -I ..\Source\Drivers\usart2 -I ..\Source\Drivers\sht30 -I ..\Source\Drivers\w25q64 -I ..\Source\Drivers\led -I ..\Source\Drivers\delay -I ..\Source\Drivers\usart1_PM25 -I ..\Source\Drivers\usart3_CO -I ..\Source\Drivers\usart4_CO2_T6703 -I ..\Source\Drivers\usart5_CH2O_AS04 -I ..\Source\Drivers\iaq -I ..\Source\Drivers\usart6_CO2_S8_0053 -I ..\Source\Drivers\usart7_CH2O_Dart_2_FE5 -I ..\Source\Drivers\usart8_Comm
+-IC:\Users\Administrator\Desktop\Gas_Sensors\Project\RTE\_STM32_Sensors
+-ID:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.4.0\Device\Include
+-ID:\Keil_v5\ARM\CMSIS\Include
+-D__UVISION_VERSION="522" -DSTM32F091 -DUSE_STDPERIPH_DRIVER -DSTM32F091
+-o .\objects\stm32f0xx_gpio.o --omf_browse .\objects\stm32f0xx_gpio.crf --depend .\objects\stm32f0xx_gpio.d "..\Source\STM32_FWLib\FWLib\src\stm32f0xx_gpio.c"

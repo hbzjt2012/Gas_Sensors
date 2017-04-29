@@ -79,14 +79,15 @@ int main(void)
 	  LED_Init();    //板载LED灯 LD2绿色
 		SHT3X_Init(0x44); // Address: 0x44 = Sensor on EvalBoard connector
                     //          0x45 = Sensor on EvalBoard  //SHT30温湿度传感器初始化
-		delay_ms(50000);
+	  // wait 50ms after power on
+		delay_ms(50);
 	  error = SHT3x_ReadSerialNumber(&serialNumber);
 		if(error != NO_ERROR){} // do error handling here
 		//start periodic measurement, with high repeatability and 1 measurements per second
 		error = SHT3X_StartPeriodicMeasurment(REPEATAB_HIGH, FREQUENCY_1HZ);
 		if(error != NO_ERROR)  {}// do error handling here	
 		
-//	  IAQ_Init();   //IAQ传感器初始化
+	  IAQ_Init();   //IAQ传感器初始化
 		SPI_Flash_Init();  		//SPI FLASH 初始化		
 		while(SPI_Flash_ReadID()!=W25Q64)							//检测不到W25Q64
 		{
@@ -99,7 +100,7 @@ int main(void)
 		printf(" SPI_Flash ID:%x\r\nr\n",SPI_FLASH_TYPE);
 		while(1)
 		{		
-//				dd=IAQ_Read(buf,8);
+				dd=IAQ_Read(buf,8);
 			  // read measurment buffer
 				error = SHT3X_ReadMeasurementBuffer(&temperature, &humidity); 
 				if(error != NO_ERROR) // do error handling here	
