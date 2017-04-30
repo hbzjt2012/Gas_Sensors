@@ -48,6 +48,9 @@ float        humidity;    // relative humidity [%RH]
 uint8_t buf[15];
 uint8_t dd=0;
 
+uint8_t buf1[15];
+uint8_t dd1=0;
+
 /* Private function prototypes -----------------------------------------------*/
 
 
@@ -83,6 +86,7 @@ int main(void)
 		if(error != NO_ERROR)  {}// do error handling here	
 		
 	  IAQ_Init();   //IAQ传感器初始化
+		MiCS_VZ_89TE_Init();  //MiCS_VZ_89TE传感器初始化
 		SPI_Flash_Init();  		//SPI FLASH 初始化		
 		while(SPI_Flash_ReadID()!=W25Q64)							//检测不到W25Q64
 		{
@@ -102,6 +106,9 @@ int main(void)
 			  
 				//USART8_SendStr(USART8,buf,8);
 				
+				dd1=MiCS_VZ_89TE_Read(buf1,7);
+			
+				USART8_SendStr(USART8,buf1,7);
 				
 				SysTick_delay_ms(2000);
 				printf("Hello world! \r\n");

@@ -33,7 +33,7 @@ The project includes  some Gas Sensors driver using STM32F091 MCU.
 
 ![image](https://github.com/hbzjt2012/Gas_Sensors/raw/master/Images/IAQ_engine.jpg)
 
-* TVOC Sensor Module:
+* TVOC MiCS-VZ-89TE Sensor Module:
 
 ![image](https://github.com/hbzjt2012/Gas_Sensors/raw/master/Images/MICS-VZ-89TE.jpg)
 
