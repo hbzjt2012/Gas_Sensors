@@ -47,6 +47,7 @@
 #include "led.h"
 #include "sht30.h"
 #include "iaq.h"
+#include "MiCS_VZ_89TE.h"
 #include "w25q64.h"
 
 /* Exported types ------------------------------------------------------------*/

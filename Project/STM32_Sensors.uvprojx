@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER, STM32F091</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Source\Application\main;..\Source\STM32_FWLib\FWLib\inc;..\Source\STM32_FWLib\CMSIS;..\Source\Drivers\usart2;..\Source\Drivers\sht30;..\Source\Drivers\w25q64;..\Source\Drivers\led;..\Source\Drivers\delay;..\Source\Drivers\usart1_PM25;..\Source\Drivers\usart3_CO;..\Source\Drivers\usart4_CO2_T6703;..\Source\Drivers\usart5_CH2O_AS04;..\Source\Drivers\iaq;..\Source\Drivers\usart6_CO2_S8_0053;..\Source\Drivers\usart7_CH2O_Dart_2_FE5;..\Source\Drivers\usart8_Comm;..\Source\Drivers\tim2</IncludePath>
+              <IncludePath>..\Source\Application\main;..\Source\STM32_FWLib\FWLib\inc;..\Source\STM32_FWLib\CMSIS;..\Source\Drivers\usart2;..\Source\Drivers\sht30;..\Source\Drivers\w25q64;..\Source\Drivers\led;..\Source\Drivers\delay;..\Source\Drivers\usart1_PM25;..\Source\Drivers\usart3_CO;..\Source\Drivers\usart4_CO2_T6703;..\Source\Drivers\usart5_CH2O_AS04;..\Source\Drivers\iaq;..\Source\Drivers\usart6_CO2_S8_0053;..\Source\Drivers\usart7_CH2O_Dart_2_FE5;..\Source\Drivers\usart8_Comm;..\Source\Drivers\tim2;..\Source\Drivers\MiCS_VZ_89TE</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -443,6 +443,11 @@
               <FileName>iaq.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Source\Drivers\iaq\iaq.c</FilePath>
+            </File>
+            <File>
+              <FileName>MiCS_VZ_89TE.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Source\Drivers\MiCS_VZ_89TE\MiCS_VZ_89TE.c</FilePath>
             </File>
             <File>
               <FileName>tim2.c</FileName>
