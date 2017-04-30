@@ -3,7 +3,7 @@
 //     硬件接线 
 //     Pin1-VCC  -> 5V
 //     Pin2-TXD  -> PC7
-//     Pin4-RXD  -> PC6
+//     Pin3-RXD  -> PC6
 //     Pin4-GND  -> GND
 
 uint8_t USART7_RX_STA;
@@ -54,7 +54,7 @@ void USART7_CH2O_Dart_2_FE5_Init(void)
 		
 		//USART7 NVIC 设置
 		NVIC_InitStructure.NVIC_IRQChannel = USART3_8_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPriority=1 ;//抢占优先级1
+    NVIC_InitStructure.NVIC_IRQChannelPriority=2 ;//抢占优先级1
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;         //IRQ通道使能
     NVIC_Init(&NVIC_InitStructure); //根据指定参数初始化NVIC
                     

@@ -35,6 +35,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "delay.h"
+#include "tim2.h"
 #include "usart1_PM25.h"
 #include "usart2.h"
 #include "usart3_CO.h"

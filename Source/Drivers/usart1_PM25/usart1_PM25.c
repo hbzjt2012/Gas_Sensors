@@ -54,7 +54,7 @@ void USART1_PM25_Init(void)
 		
 		//USART1 NVIC 设置
 		NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPriority=1 ;//抢占优先级1
+    NVIC_InitStructure.NVIC_IRQChannelPriority=2 ;//抢占优先级1
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;         //IRQ通道使能
     NVIC_Init(&NVIC_InitStructure); //根据指定参数初始化NVIC
                     

@@ -381,7 +381,7 @@ bt SHT3X_ReadAlert(void);
 //                      TIMEOUT_ERROR  = timeout
 //                      NO_ERROR       = no error
 //-----------------------------------------------------------------------------
-etError SHT3X_SofloatReset(void);
+etError SHT3X_SoftReset(void);
 
 
 //=============================================================================

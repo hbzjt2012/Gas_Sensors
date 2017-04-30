@@ -6,12 +6,12 @@
 
 #define Sensor_ADDRESS 0xb5 //读取sensor地址
 
-#define SCLL       GPIO_ResetBits(GPIOB,GPIO_Pin_8)
-#define SCLH       GPIO_SetBits(GPIOB,GPIO_Pin_8)                                             
-#define SDAL       GPIO_ResetBits(GPIOB,GPIO_Pin_9)
-#define SDAH       GPIO_SetBits(GPIOB,GPIO_Pin_9)
+#define SCLL       (GPIOA->BRR = GPIO_Pin_11)       // set SCL to low
+#define SCLH       (GPIOA->BSRR = GPIO_Pin_11)      // set SCL to open-drain                                       
+#define SDAL       (GPIOA->BRR = GPIO_Pin_12)       // set SDA to low
+#define SDAH       (GPIOA->BSRR = GPIO_Pin_12)      // set SDA to open-drain
 
-#define SDA_STATE     GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_9)
+#define SDA_STATE     (GPIOA->IDR&GPIO_Pin_12)      // read SDA
 
 enum I2C_REPLY {I2C_NACK = 0, I2C_ACK = 1};
 
@@ -19,6 +19,8 @@ enum I2C_STATE {I2C_READY = 0, I2C_BUSY = 1, I2C_ERROR = 2};
 
 /* Private functions ---------------------------------------------------------*/
 void IAQ_Init(void);
+void I2C_SDA_OUT(void);//SDA输出
+void I2C_SDA_IN(void); //SDA输入
 static uint8_t I2C_Start(void);
 static void I2C_Stop(void);
 static void I2C_Ack(uint8_t);

@@ -3,6 +3,10 @@
 
 #include "stm32f0xx.h"
 
+#define  FLASH_WriteAddress     0x00000
+#define  FLASH_ReadAddress      FLASH_WriteAddress
+#define  FLASH_SectorToErase    FLASH_WriteAddress
+
 //W25X系列/Q系列芯片列表	   
 //W25Q80 ID  0XEF13
 //W25Q16 ID  0XEF14
@@ -44,6 +48,7 @@ uint8_t	 SPI_Flash_ReadSR(void);        //读取状态寄存器
 void SPI_FLASH_Write_SR(uint8_t sr);  	//写状态寄存器
 void SPI_FLASH_Write_Enable(void);  //写使能 
 void SPI_FLASH_Write_Disable(void);	//写保护
+void SPI_Flash_Write_Page(uint8_t* pBuffer,uint32_t WriteAddr,uint16_t NumByteToWrite);
 void SPI_Flash_Write_NoCheck(uint8_t* pBuffer,uint32_t WriteAddr,uint16_t NumByteToWrite);
 void SPI_Flash_Read(uint8_t* pBuffer,uint32_t ReadAddr,uint16_t NumByteToRead);   //读取flash
 void SPI_Flash_Write(uint8_t* pBuffer,uint32_t WriteAddr,uint16_t NumByteToWrite);//写入flash

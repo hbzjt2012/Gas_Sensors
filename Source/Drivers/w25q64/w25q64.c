@@ -8,6 +8,8 @@
 //     DO   -> PB14
 //     DI   -> PB15
 
+uint8_t SPI_Flash_ReadBuffer[25];
+
 uint16_t SPI_FLASH_TYPE=W25Q64;//默认就是25Q64
 
 void SPI2_Init(void)
@@ -106,7 +108,7 @@ void SPI_Flash_Init(void)
 {	
 	
 	SPI2_Init();		   	//初始化SPI
-	SPI2_SetSpeed(SPI_BaudRatePrescaler_8);//设置为6M时钟,高速模式
+	SPI2_SetSpeed(SPI_BaudRatePrescaler_16);//设置为6M时钟,高速模式
 	SPI_FLASH_TYPE=SPI_Flash_ReadID();//读取FLASH ID.  
 
 }  
@@ -324,7 +326,7 @@ void SPI_Flash_PowerDown(void)
   	SPI_FLASH_CS_L;                            //使能器件   
     SPI2_ReadWriteByte(W25X_PowerDown);        //发送掉电命令  
 		SPI_FLASH_CS_H;                            //取消片选     	      
-    delay_us(3);                               //等待TPD  
+    SysTick_delay_us(3);                               //等待TPD  
 }   
 //唤醒
 void SPI_Flash_WAKEUP(void)   
@@ -332,6 +334,6 @@ void SPI_Flash_WAKEUP(void)
   	SPI_FLASH_CS_L;                            //使能器件   
     SPI2_ReadWriteByte(W25X_ReleasePowerDown);   //  send W25X_PowerDown command 0xAB    
 		SPI_FLASH_CS_H;                            //取消片选     	      
-    delay_us(3);                               //等待TRES1
+    SysTick_delay_us(3);                               //等待TRES1
 }   
 

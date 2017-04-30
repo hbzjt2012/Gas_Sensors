@@ -69,9 +69,24 @@ extern	uint8_t USART8_RX_BUF[64];  //接收数据缓冲区,最大64个字节
 extern unsigned char USART8_Send_Cmd_01[];
 extern unsigned char USART8_Send_Cmd_0C[];
 extern unsigned char USART8_Send_Cmd_0C_Data;
-extern uint16_t USART8_Send_Cmd_04_Data[];
+extern uint32_t USART8_Send_Cmd_04_Data[10];
+extern uint8_t USART8_Cmd_04_Data[64];
+extern uint8_t SPI_Flash_ReadBuffer[25];
+
+extern unsigned char ReadCO_Cmd[];
+extern unsigned char T6703_ReadGas_Cmd[];
+extern unsigned char ReadCH2O_Cmd[];
+extern unsigned char ReadCO2_S8_Cmd[];
+extern unsigned char USART8_Send_Gas_Data[];
+
+extern etError   error;       // error code
+extern uint32_t      serialNumber;// serial number
+extern regStatus status;      // sensor status
+extern float        temperature; // temperature [癈]
+extern float        humidity;    // relative humidity [%RH]
 
 /* Private function prototypes -----------------------------------------------*/
+
 /* Private functions ---------------------------------------------------------*/
 
 /******************************************************************************/
@@ -144,6 +159,43 @@ void SysTick_Handler(void)
 }*/
 
 /**
+  * @brief  This function handles TIM2 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM2_IRQHandler(void)
+{
+	 if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
+		{
+			TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
+			
+			USART3_SendStr(USART3,ReadCO_Cmd,8);
+			USART4_SendStr(USART4,T6703_ReadGas_Cmd,8);
+			USART5_SendStr(USART5,ReadCH2O_Cmd,8);
+			USART6_SendStr(USART6,ReadCO2_S8_Cmd,8);
+			USART8_SendStr(USART8,USART8_Send_Gas_Data,17);
+
+			// read measurment buffer
+			error = SHT3X_ReadMeasurementBuffer(&temperature, &humidity); 
+			if(error != NO_ERROR) // do error handling here	
+			{
+				printf("SHT3x-Dis Read Error!\r\n");
+			}					
+			
+			//更新温湿度数据
+			USART8_Send_Gas_Data[13]=((int)(temperature*10))/256;   //温度高位
+			USART8_Send_Gas_Data[14]=((int)(temperature*10))%256;   //温度低位
+			USART8_Send_Gas_Data[15]=((int)(humidity*10))/256;      //湿度高位
+			USART8_Send_Gas_Data[16]=((int)(humidity*10))%256;      //湿度低位
+			
+			printf("serialNumber=%d  error=%d\n",serialNumber,error);
+			printf("temperature=%.1f humidity=%.1f \n",temperature,humidity);
+			
+			printf("TIM2 ...\r\n");
+		}
+}
+
+/**
   * @brief  This function handles USART1 interrupt request.
   * @param  None
   * @retval None
@@ -178,6 +230,13 @@ void USART1_IRQHandler(void)     //串口1中断服务函数
 					if(USART_RX_STA >= 23 && (USART_RX_BUF[1]==0x4d))
 					{
 							//USART_SendData(USART1,USART_RX_BUF[12]*256+USART_RX_BUF[13]);
+						  
+						  //更新PM2.5和PM10数据
+						  USART8_Send_Gas_Data[1]=USART_RX_BUF[6];
+							USART8_Send_Gas_Data[2]=USART_RX_BUF[7];
+							USART8_Send_Gas_Data[3]=USART_RX_BUF[14];
+							USART8_Send_Gas_Data[4]=USART_RX_BUF[15];
+						  
 							printf("PM2.5:%d\n",USART_RX_BUF[6]*256+USART_RX_BUF[7]);
 							printf("PM10:%d\n",USART_RX_BUF[14]*256+USART_RX_BUF[15]);
 							start  = 0;
@@ -240,6 +299,11 @@ void USART3_8_IRQHandler(void)
 					if(USART3_RX_STA >= 7 && (USART3_RX_BUF[1]==0x03))
 					{
 							//USART_SendData(USART1,USART_RX_BUF[12]*256+USART_RX_BUF[13]);
+						
+							//更新CO数据
+						  USART8_Send_Gas_Data[11]=USART3_RX_BUF[3];
+							USART8_Send_Gas_Data[12]=USART3_RX_BUF[4];
+						
 							printf("CO:%d\n",USART3_RX_BUF[3]*256+USART3_RX_BUF[4]);
 							USART3_start  = 0;
 							USART3_RX_STA=0;//重新开始接收   
@@ -342,6 +406,11 @@ void USART3_8_IRQHandler(void)
 					if(USART6_RX_STA >= 7 && (USART6_RX_BUF[1]==0x04))
 					{
 							//USART_SendData(USART1,USART_RX_BUF[12]*256+USART_RX_BUF[13]);
+						
+							//更新CO数据
+						  USART8_Send_Gas_Data[9]=USART6_RX_BUF[3];
+							USART8_Send_Gas_Data[10]=USART6_RX_BUF[4];
+						
 							printf("CO2 From S8:%d\n",USART6_RX_BUF[3]*256+USART6_RX_BUF[4]);
 							USART6_start  = 0;
 							USART6_RX_STA=0;//重新开始接收   
@@ -376,6 +445,11 @@ void USART3_8_IRQHandler(void)
 					if(USART7_RX_STA >= 8 && (USART7_RX_BUF[1]==0x17))
 					{
 							//USART_SendData(USART1,USART_RX_BUF[12]*256+USART_RX_BUF[13]);
+						
+							//更新CH2O数据
+						  USART8_Send_Gas_Data[7]=USART7_RX_BUF[4];
+							USART8_Send_Gas_Data[8]=USART7_RX_BUF[5];
+						
 							printf("CH2O From Dart 2-FE5:%d\n",USART7_RX_BUF[4]*256+USART7_RX_BUF[5]);
 							USART7_start  = 0;
 							USART7_RX_STA=0;//重新开始接收   
@@ -430,11 +504,18 @@ void USART3_8_IRQHandler(void)
 					else if(USART8_RX_STA >= 18 && (USART8_RX_BUF[1]==0x32) && (USART8_RX_BUF[2]==0x04))
 					{
 							char str[40];
-							USART8_Send_Cmd_04_Data[0] = USART8_RX_BUF[4]*256 + USART8_RX_BUF[5];
-							USART8_Send_Cmd_04_Data[1] = USART8_RX_BUF[7]*256 + USART8_RX_BUF[8];
-							USART8_Send_Cmd_04_Data[2] = USART8_RX_BUF[10]*256 + USART8_RX_BUF[11];
-							USART8_Send_Cmd_04_Data[3] = USART8_RX_BUF[13]*256 + USART8_RX_BUF[14];
-							USART8_Send_Cmd_04_Data[4] = USART8_RX_BUF[16]*256 + USART8_RX_BUF[17];
+							uint8_t i=0;
+						
+							for(i=0;i<64;i++)
+							{
+								USART8_Cmd_04_Data[i]=USART8_RX_BUF[i];
+							}
+											
+							USART8_Send_Cmd_04_Data[0] = USART8_Cmd_04_Data[4]*256 + USART8_Cmd_04_Data[5];
+							USART8_Send_Cmd_04_Data[1] = USART8_Cmd_04_Data[7]*256 + USART8_Cmd_04_Data[8];
+							USART8_Send_Cmd_04_Data[2] = USART8_Cmd_04_Data[10]*256 + USART8_Cmd_04_Data[11];
+							USART8_Send_Cmd_04_Data[3] = USART8_Cmd_04_Data[13]*256 + USART8_Cmd_04_Data[14];
+							USART8_Send_Cmd_04_Data[4] = USART8_Cmd_04_Data[16]*256 + USART8_Cmd_04_Data[17];
 							sprintf(str,"Cmd_04_Data[0]: %d\r\n",USART8_Send_Cmd_04_Data[0]);
 							USART8_SendStr(USART8,(uint8_t *)str,strlen(str));
 							sprintf(str,"Cmd_04_Data[1]: %d\r\n",USART8_Send_Cmd_04_Data[1]);
@@ -445,10 +526,19 @@ void USART3_8_IRQHandler(void)
 							USART8_SendStr(USART8,(uint8_t *)str,strlen(str));
 							sprintf(str,"Cmd_04_Data[4]: %d\r\n",USART8_Send_Cmd_04_Data[4]);
 							USART8_SendStr(USART8,(uint8_t *)str,strlen(str));
+							
+							//写入Flash中
+							SPI_Flash_Erase_Sector(FLASH_SectorToErase);	 
+							SPI_Flash_Write(USART8_Cmd_04_Data,FLASH_WriteAddress, 19);
+							SPI_Flash_Read(SPI_Flash_ReadBuffer,FLASH_ReadAddress,19);
+							USART8_SendStr(USART8,SPI_Flash_ReadBuffer,19);
+							
 							USART8_start  = 0;
 							USART8_RX_STA=0;//重新开始接收   
-							USART8_RX_BUF[0] = 0;
-							USART8_RX_BUF[2] = 0;
+						  for(i=0;i<64;i++)
+							{
+								USART8_RX_BUF[i]=0;
+							}
 					}
 				}                   
     }

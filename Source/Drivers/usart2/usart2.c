@@ -62,3 +62,17 @@ void USART2_Init(void)
 //    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;  
 //    NVIC_Init(&NVIC_InitStructure);  
 }
+
+/**
+  * @brief  USART2·¢ËÍÒ»¸ö×Ö·û´®
+**/
+void USART2_SendStr(USART_TypeDef* USARTx, uint8_t *Data,uint32_t len)
+{
+    uint32_t i;
+		USART_ClearFlag(USART2,USART_FLAG_TC); 
+    for(i=0; i<len; i++)
+    {                                         
+        USART_SendData(USARTx, *Data++);
+        while( USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET );
+    }
+}

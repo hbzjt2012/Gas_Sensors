@@ -51,26 +51,26 @@ void I2c_Init(void)                      /* -- adapt the init for your uC -- */
 void I2c_StartCondition(void)
 {
   SDA_OPEN();
-  delay_ms(1);
+  SysTick_delay_us(1);
   SCL_OPEN();
-  delay_ms(1);
+  SysTick_delay_us(1);
   SDA_LOW();
-  delay_ms(10);  // hold time start condition (t_HD;STA)
+  SysTick_delay_us(10);  // hold time start condition (t_HD;STA)
   SCL_LOW();
-  delay_ms(10);
+  SysTick_delay_us(10);
 }
 
 //-----------------------------------------------------------------------------
 void I2c_StopCondition(void)
 {
   SCL_LOW();
-  delay_ms(1);
+  SysTick_delay_us(1);
   SDA_LOW();
-  delay_ms(1);
+  SysTick_delay_us(1);
   SCL_OPEN();
-  delay_ms(10);  // set-up time stop condition (t_SU;STO)
+  SysTick_delay_us(10);  // set-up time stop condition (t_SU;STO)
   SDA_OPEN();
-  delay_ms(10);
+  SysTick_delay_us(10);
 }
 
 //-----------------------------------------------------------------------------
@@ -82,18 +82,18 @@ etError I2c_WriteByte(uint8_t txByte)
   {
     if((mask & txByte) == 0) SDA_LOW(); // masking txByte, write bit to SDA-Line
     else                     SDA_OPEN();
-    delay_ms(1);               // data set-up time (t_SU;DAT)
+    SysTick_delay_us(5);               // data set-up time (t_SU;DAT)
     SCL_OPEN();                         // generate clock pulse on SCL
-    delay_ms(5);               // SCL high time (t_HIGH)
+    SysTick_delay_us(10);               // SCL high time (t_HIGH)
     SCL_LOW();
-    delay_ms(1);               // data hold time(t_HD;DAT)
+    SysTick_delay_us(5);               // data hold time(t_HD;DAT)
   }
   SDA_OPEN();                           // release SDA-line
   SCL_OPEN();                           // clk #9 for ack
-  delay_ms(1);                 // data set-up time (t_SU;DAT)
+  SysTick_delay_us(5);                 // data set-up time (t_SU;DAT)
   if(SDA_READ) error = ACK_ERROR;       // check ack from i2c slave
   SCL_LOW();
-  delay_ms(20);                // wait to see byte package on scope
+  SysTick_delay_us(20);                // wait to see byte package on scope
   return error;                         // return error code
 }
 
@@ -107,21 +107,21 @@ etError I2c_ReadByte(uint8_t *rxByte, etI2cAck ack, uint8_t timeout)
   for(mask = 0x80; mask > 0; mask >>= 1) // shifloat bit for masking (8 times)
   { 
     SCL_OPEN();                          // start clock on SCL-line
-    delay_ms(1);                // clock set-up time (t_SU;CLK)
+    SysTick_delay_us(1);                // clock set-up time (t_SU;CLK)
     error = I2c_WaitWhileClockStreching(timeout);// wait while clock streching
-    delay_ms(3);                // SCL high time (t_HIGH)
+    SysTick_delay_us(3);                // SCL high time (t_HIGH)
     if(SDA_READ) *rxByte |= mask;        // read bit
     SCL_LOW();
-    delay_ms(1);                // data hold time(t_HD;DAT)
+    SysTick_delay_us(1);                // data hold time(t_HD;DAT)
   }
   if(ack == ACK) SDA_LOW();              // send acknowledge if necessary
   else           SDA_OPEN();
-  delay_ms(1);                  // data set-up time (t_SU;DAT)
+  SysTick_delay_us(1);                  // data set-up time (t_SU;DAT)
   SCL_OPEN();                            // clk #9 for ack
-  delay_ms(5);                  // SCL high time (t_HIGH)
+  SysTick_delay_us(5);                  // SCL high time (t_HIGH)
   SCL_LOW();
   SDA_OPEN();                            // release SDA-line
-  delay_ms(20);                 // wait to see byte package on scope
+  SysTick_delay_us(20);                 // wait to see byte package on scope
   
   return error;                          // return with no error
 }
@@ -146,7 +146,7 @@ static etError I2c_WaitWhileClockStreching(uint8_t timeout)
   while(SCL_READ == 0)
   {
     if(timeout-- == 0) return TIMEOUT_ERROR;
-    delay_ms(1000);
+    SysTick_delay_us(1000);
   }
   
   return error;
@@ -366,7 +366,7 @@ etError SHT3X_GetTempAndHumiPolling(float* temperature, float* humidity,
       if(error == NO_ERROR) break;
   
       // delay 1ms
-      delay_ms(1000);
+      SysTick_delay_us(1000);
     }
     
     // check for timeout error
@@ -655,7 +655,7 @@ etError SHT3X_GetAlertLimits(float* humidityHighSet,   float* temperatureHighSet
 //}
 
 //-----------------------------------------------------------------------------
-etError SHT3X_SofloatReset(void)
+etError SHT3X_SoftReset(void)
 {
   etError error; // error code
 
@@ -667,7 +667,7 @@ etError SHT3X_SofloatReset(void)
   SHT3X_StopAccess();
   
   // if no error, wait 50 ms afloater reset
-  if(error == NO_ERROR) delay_ms(50000); 
+  if(error == NO_ERROR) SysTick_delay_us(50000); 
 
   return error;
 }
@@ -679,13 +679,13 @@ void SHT3X_HardReset(void)
 //  RESET_LOW();
 
 //  // wait 100 ms
-//  delay_ms(100000);
+//  SysTick_delay_us(100000);
 //  
 //  // release reset
 //  RESET_HIGH();
 //  
 //  // wait 50 ms afloater reset
-//  delay_ms(50000);
+//  SysTick_delay_us(50000);
 }
 
                              

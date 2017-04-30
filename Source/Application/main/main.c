@@ -38,12 +38,6 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern unsigned char ReadCO_Cmd[];
-extern unsigned char T6703_ReadGas_Cmd[];
-extern unsigned char ReadCH2O_Cmd[];
-extern unsigned char ReadCO2_S8_Cmd[];
-extern unsigned char USART8_Send_Gas_Data[];
-
 etError   error;       // error code
 uint32_t      serialNumber;// serial number
 regStatus status;      // sensor status
@@ -68,6 +62,7 @@ int main(void)
 {
 		SystemInit();
 	  delay_init();
+		TIM2_Init();    //定时器2初始化
 		USART1_PM25_Init();         //USART1串口初始化,用于接收PM2.5传感器数据
 		USART2_Init(); 			        //USART2串口初始化函数
 		USART3_CO_Init();           //USART3串口初始化,用于接收CO传感器数据
@@ -80,7 +75,7 @@ int main(void)
 		SHT3X_Init(0x44); // Address: 0x44 = Sensor on EvalBoard connector
                     //          0x45 = Sensor on EvalBoard  //SHT30温湿度传感器初始化
 	  // wait 50ms after power on
-		delay_ms(50);
+		SysTick_delay_ms(50);
 	  error = SHT3x_ReadSerialNumber(&serialNumber);
 		if(error != NO_ERROR){} // do error handling here
 		//start periodic measurement, with high repeatability and 1 measurements per second
@@ -92,30 +87,23 @@ int main(void)
 		while(SPI_Flash_ReadID()!=W25Q64)							//检测不到W25Q64
 		{
 			LD2_OFF();
-			delay_ms(500);
+			SysTick_delay_ms(500);
 			LD2_ON();
-			delay_ms(500);
+			SysTick_delay_ms(500);
 			printf(" SPI_Flash ID Read Failed!\r\n");
 		} 
 		printf(" SPI_Flash ID:%x\r\nr\n",SPI_FLASH_TYPE);
+		
+
+
 		while(1)
 		{		
 				dd=IAQ_Read(buf,8);
-			  // read measurment buffer
-				error = SHT3X_ReadMeasurementBuffer(&temperature, &humidity); 
-				if(error != NO_ERROR) // do error handling here	
-				{
-					printf("SHT3x-Dis Read Error!\r\n");
-				}					
-				printf("serialNumber=%d  error=%d\n",serialNumber,error);
-				printf("temperature=%f humidity=%f \n",temperature,humidity);
-				USART8_SendStr(USART8,buf,8);
-				USART3_SendStr(USART3,ReadCO_Cmd,8);
-			  USART4_SendStr(USART4,T6703_ReadGas_Cmd,8);
-				USART5_SendStr(USART5,ReadCH2O_Cmd,8);
-				USART6_SendStr(USART6,ReadCO2_S8_Cmd,8);
-				USART8_SendStr(USART8,USART8_Send_Gas_Data,17);
-				delay_ms(1000);
+			  
+				//USART8_SendStr(USART8,buf,8);
+				
+				
+				SysTick_delay_ms(2000);
 				printf("Hello world! \r\n");
 		}
 }

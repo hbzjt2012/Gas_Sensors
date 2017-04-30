@@ -56,7 +56,7 @@ void USART5_CH2O_AS04_Init(void)
 		
 		//USART5 NVIC 设置
 		NVIC_InitStructure.NVIC_IRQChannel = USART3_8_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPriority=1 ;//抢占优先级1
+    NVIC_InitStructure.NVIC_IRQChannelPriority=3 ;//抢占优先级1
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;         //IRQ通道使能
     NVIC_Init(&NVIC_InitStructure); //根据指定参数初始化NVIC
                     
