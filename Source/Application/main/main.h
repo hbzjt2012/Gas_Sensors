@@ -48,6 +48,7 @@
 #include "sht30.h"
 #include "iaq.h"
 #include "MiCS_VZ_89TE.h"
+#include "MiCS_VZ_89TE_IIC.h"
 #include "l3g4200d.h"
 #include "w25q64.h"
 

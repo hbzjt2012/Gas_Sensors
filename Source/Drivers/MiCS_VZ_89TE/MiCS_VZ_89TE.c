@@ -227,7 +227,10 @@ etError Single_Write(uint8_t SlaveAddress,uint8_t REG_Address,uint8_t REG_data)
 {
 	  etError error; // error code
 	
-    error = MiCS_VZ_89TE_StartWriteAccess();
+    // write a start condition
+		MiCS_VZ_89TE_I2C_StartCondition();
+		// write the sensor I2C address with the write flag
+		error = MiCS_VZ_89TE_I2C_WriteByte(SlaveAddress);
 	
 	  if(error == NO_ERROR) error = MiCS_VZ_89TE_I2C_WriteByte(REG_Address);
 		if(error == NO_ERROR) error = MiCS_VZ_89TE_I2C_WriteByte(REG_data);
@@ -242,10 +245,19 @@ etError Single_Read(uint8_t REG_data,uint8_t SlaveAddress,uint8_t REG_Address)
 {       	
 		etError error; // error code
 	
-    error = MiCS_VZ_89TE_StartWriteAccess();
+		// write a start condition
+		MiCS_VZ_89TE_I2C_StartCondition();
+		// write the sensor I2C address with the write flag
+		error = MiCS_VZ_89TE_I2C_WriteByte(SlaveAddress);
 	  
 	  if(error == NO_ERROR) error = MiCS_VZ_89TE_I2C_WriteByte(REG_Address);
-		if(error == NO_ERROR) error = MiCS_VZ_89TE_StartReadAccess();
+		if(error == NO_ERROR)
+		{
+			// write a start condition
+			MiCS_VZ_89TE_I2C_StartCondition();
+			// write the sensor I2C address with the write flag
+			error = MiCS_VZ_89TE_I2C_WriteByte(SlaveAddress+1);
+		}
 	  if(error == NO_ERROR) error = MiCS_VZ_89TE_I2C_ReadByte(&REG_data, NACK, 0);
 	  
 		MiCS_VZ_89TE_StopAccess();

@@ -47,8 +47,8 @@
 #define L3G4200D_SDA_L         GPIO_ResetBits(GPIOB, GPIO_Pin_9)
     
 //IO方向设置
-#define L3G4200D_SDA_IN()  {GPIOB->MODER&=~(3<<(7*2));GPIOB->MODER|=0<<7*2;}	//PB9输入模式
-#define L3G4200D_SDA_OUT() {GPIOB->MODER&=~(3<<(7*2));GPIOB->MODER|=1<<7*2;} //PB9输出模式
+#define L3G4200D_SDA_IN()  {GPIOB->MODER&=~(3<<(9*2));GPIOB->MODER|=0<<9*2;}	//PB9输入模式
+#define L3G4200D_SDA_OUT() {GPIOB->MODER&=~(3<<(9*2));GPIOB->MODER|=1<<9*2;} //PB9输出模式
 
 #define L3G4200D_SCL_read      GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_8)
 #define L3G4200D_SDA_read      GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_9)
@@ -65,6 +65,7 @@ void L3G4200D_I2C_SendByte(uint8_t SendByte);
 uint8_t L3G4200D_I2C_RadeByte(void);
 uint8_t L3G4200D_Single_Write(uint8_t SlaveAddress,uint8_t REG_Address,uint8_t REG_data);
 uint8_t L3G4200D_Single_Read(uint8_t SlaveAddress,uint8_t REG_Address);
+void L3G4200D_I2C_Init(void);
 void L3G4200D_Init(void);
 void L3G4200D_Read(void);
 void L3G4200D_Send_data(uint8_t axis);
