@@ -86,7 +86,9 @@ int main(void)
 		if(error != NO_ERROR)  {}// do error handling here	
 		
 	  IAQ_Init();   //IAQ传感器初始化
-		MiCS_VZ_89TE_Init();  //MiCS_VZ_89TE传感器初始化
+		MiCS_VZ_89TE_Init(MiCS_VZ_89TE_Sensor_ADDRESS);  //MiCS_VZ_89TE传感器初始化
+		L3G4200D_Init();
+		//Init_L3G4200D();   //L3G4200D传感器初始化,用于测试IIC
 		SPI_Flash_Init();  		//SPI FLASH 初始化		
 		while(SPI_Flash_ReadID()!=W25Q64)							//检测不到W25Q64
 		{
@@ -106,9 +108,12 @@ int main(void)
 			  
 				//USART8_SendStr(USART8,buf,8);
 				
-				dd1=MiCS_VZ_89TE_Read(buf1,7);
+//				dd1=MiCS_VZ_89TE_ReadStatus(buf1,NACK,0);
+//			  printf("MiCS_VZ_89TE_dd1=%d\r\n",dd1);
 			
-				USART8_SendStr(USART8,buf1,7);
+//			  READ_L3G4200D(buf1);			
+//				USART8_SendStr(USART8,buf1,7);
+			  L3G4200D_Read();
 				
 				SysTick_delay_ms(2000);
 				printf("Hello world! \r\n");
