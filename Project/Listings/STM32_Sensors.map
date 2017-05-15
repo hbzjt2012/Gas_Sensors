@@ -475,7 +475,6 @@ Section Cross References
     main.o(i.main) refers to w25q64.o(i.SPI_Flash_ReadID) for SPI_Flash_ReadID
     main.o(i.main) refers to iaq.o(i.IAQ_Read) for IAQ_Read
     main.o(i.main) refers to mics_vz_89te_iic.o(i.MiCS_VZ_89TE_IIC_ReadStatus) for MiCS_VZ_89TE_IIC_ReadStatus
-    main.o(i.main) refers to usart8_comm.o(i.USART8_SendStr) for USART8_SendStr
     main.o(i.main) refers to main.o(.data) for serialNumber
     main.o(i.main) refers to w25q64.o(.data) for SPI_FLASH_TYPE
     main.o(i.main) refers to main.o(.bss) for buf
@@ -2128,9 +2127,9 @@ Image Symbol Table
     __scatterload_zeroinit                   0x080035f7   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
     delay_init                               0x08003ebd   Thumb Code    40  delay.o(i.delay_init)
     fputc                                    0x08003ef5   Thumb Code    32  usart2.o(i.fputc)
-    main                                     0x08003f19   Thumb Code   204  main.o(i.main)
-    Region$$Table$$Base                      0x0800404c   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x0800406c   Number         0  anon$$obj.o(Region$$Table)
+    main                                     0x08003f19   Thumb Code   194  main.o(i.main)
+    Region$$Table$$Base                      0x08004040   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x08004060   Number         0  anon$$obj.o(Region$$Table)
     USART_RX_STA                             0x20000000   Data           1  usart1_pm25.o(.data)
     USART3_RX_STA                            0x20000001   Data           1  usart3_co.o(.data)
     ReadCO_Cmd                               0x20000002   Data           8  usart3_co.o(.data)
@@ -2180,9 +2179,9 @@ Memory Map of the image
 
   Image Entry point : 0x080000bd
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00004104, Max: 0x00040000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000040f8, Max: 0x00040000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Base: 0x08000000, Size: 0x0000406c, Max: 0x00040000, ABSOLUTE)
+    Execution Region ER_IROM1 (Base: 0x08000000, Size: 0x00004060, Max: 0x00040000, ABSOLUTE)
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -2360,8 +2359,8 @@ Memory Map of the image
     0x08003eba   0x00000002   PAD
     0x08003ebc   0x00000038   Code   RO          776    i.delay_init        delay.o
     0x08003ef4   0x00000024   Code   RO          188    i.fputc             usart2.o
-    0x08003f18   0x00000134   Code   RO         1225    i.main              main.o
-    0x0800404c   0x00000020   Data   RO         4983    Region$$Table       anon$$obj.o
+    0x08003f18   0x00000128   Code   RO         1225    i.main              main.o
+    0x08004040   0x00000020   Data   RO         4983    Region$$Table       anon$$obj.o
 
 
     Execution Region RW_IRAM1 (Base: 0x20000000, Size: 0x000016f8, Max: 0x00008000, ABSOLUTE)
@@ -2408,7 +2407,7 @@ Image component sizes
        114         20          0          4          0       1659   delay.o
        962        122          0          0          0       5485   iaq.o
         50          0          0          0          0        483   led.o
-       308        104          0         22         30       1416   main.o
+       296        102          0         22         30       1412   main.o
        870         34          0          0          0       6303   mics_vz_89te_iic.o
       1412         98          0          1          0      12157   sht30.o
         88         38        188          0       1024        672   startup_stm32f091.o
@@ -2432,7 +2431,7 @@ Image component sizes
       1062         68          0          2       4121       8520   w25q64.o
 
     ----------------------------------------------------------------------
-     11820       1384        220        148       5728     306845   Object Totals
+     11808       1382        220        148       5728     306841   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         22          0          0          5          1          0   (incl. Padding)
 
@@ -2494,15 +2493,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     16272       1530        220        152       5728     303077   Grand Totals
-     16272       1530        220        152       5728     303077   ELF Image Totals
-     16272       1530        220        152          0          0   ROM Totals
+     16260       1528        220        152       5728     303073   Grand Totals
+     16260       1528        220        152       5728     303073   ELF Image Totals
+     16260       1528        220        152          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                16492 (  16.11kB)
+    Total RO  Size (Code + RO Data)                16480 (  16.09kB)
     Total RW  Size (RW Data + ZI Data)              5880 (   5.74kB)
-    Total ROM Size (Code + RO Data + RW Data)      16644 (  16.25kB)
+    Total ROM Size (Code + RO Data + RW Data)      16632 (  16.24kB)
 
 ==============================================================================
 

@@ -116,7 +116,7 @@ int main(void)
 
 
 				MiCS_VZ_89TE_IIC_ReadStatus(buf1);
-				USART8_SendStr(USART8,buf1,7);
+//				USART8_SendStr(USART8,buf1,7);
 //			  L3G4200D_Read();
 				
 				SysTick_delay_ms(2000);
